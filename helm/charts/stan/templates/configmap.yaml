@@ -89,29 +89,19 @@ data:
 
       {{- with .Values.store.limits }}
       store_limits: {
-        {{- if .max_channels }}
-        max_channels: {{ .max_channels }}
+        {{- if kindIs "int" .max_channels }}
+        max_channels: {{ .max_channels | int }}
         {{- end }}
 
-        {{- if .max_msgs }}
-        max_msgs: {{ .max_msgs }}
-        {{- end }}
+        max_msgs: {{ .max_msgs | int }}
 
-        {{- if .max_bytes }}
-        max_bytes: {{ .max_bytes }}
-        {{- end }}
+        max_bytes: {{ .max_bytes | int }}
 
-        {{- if .max_age }}
         max_age: {{ .max_age }}
-        {{- end }}
 
-        {{- if .max_subs }}
-        max_subs: {{ .max_subs }}
-        {{- end }}
+        max_subs: {{ .max_subs | int }}
 
-        {{- if .max_inactivity }}
         max_inactivity: {{ .max_inactivity }}
-        {{- end }}
 
         {{- if .channels }}
 
@@ -119,25 +109,11 @@ data:
         {{- range $channel, $limits := .channels }}
           {{ $channel }}: {
             {{- if $limits }}
-            {{- with $limits.max_subs }}
-            max_subs: {{ . }}
-            {{- end }}
-
-            {{- with $limits.max_msgs }}
-            max_msgs: {{ . }}
-            {{- end }}
-
-            {{- with $limits.max_bytes }}
-            max_bytes: {{ . }}
-            {{- end }}
-
-            {{- with $limits.max_age }}
-            max_age: {{ . }}
-            {{- end }}
-
-            {{- with $limits.max_inactivity }}
-            max_inactivity: {{ . }}
-            {{- end }}
+            max_subs: {{ $limits.max_subs | int }}
+            max_msgs: {{ $limits.max_msgs | int }}
+            max_bytes: {{ $limits.max_bytes | int }}
+            max_age: {{ $limits.max_age }}
+            max_inactivity: {{ $limits.max_inactivity }}
           {{- end }}
           }
         {{- end }}
