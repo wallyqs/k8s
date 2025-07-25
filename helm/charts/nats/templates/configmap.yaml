@@ -14,6 +14,8 @@ data:
     # PID file shared with configuration reloader.
     pid_file: "/var/run/nats/nats.pid"
 
+    # prof_block_rate: 1
+
     {{- if .Values.nats.config }}
     ###########
     #         #
@@ -82,7 +84,11 @@ data:
       {{- end }}
 
       {{- if .Values.nats.jetstream.domain }}
+      {{- if eq .Values.nats.jetstream.domain "AUTO" }}
+      domain: {{ include "nats.fullname" . }}
+      {{ else }}
       domain: {{ .Values.nats.jetstream.domain }}
+      {{- end }}
       {{- end }}
 
       {{- if .Values.nats.jetstream.fileStorage.enabled }}
@@ -107,8 +113,20 @@ data:
       unique_tag: {{ .Values.nats.jetstream.uniqueTag }}
       {{- end }}
 
+      {{- if .Values.nats.jetstream.requestQueueLimit }}
+      request_queue_limit: {{ .Values.nats.jetstream.requestQueueLimit }}
+      {{- end }}
+
       {{- if .Values.nats.jetstream.maxOutstandingCatchup }}
       max_outstanding_catchup: {{ .Values.nats.jetstream.maxOutstandingCatchup }}
+      {{- end }}
+
+      {{- if .Values.nats.jetstream.maxBufferedSize }}
+      max_buffered_size: {{ .Values.nats.jetstream.maxBufferedSize }}
+      {{- end }}
+
+      {{- if .Values.nats.jetstream.maxBufferedMsgs }}
+      max_buffered_msgs: {{ .Values.nats.jetstream.maxBufferedMsgs }}
       {{- end }}
     }
     {{- end }}
@@ -159,13 +177,25 @@ data:
       {{- if .Values.cluster.name }}
       name: {{ .Values.cluster.name }}
       {{- else }}
-      name: {{ template "nats.name" . }}
+      name: {{ template "nats.fullname" . }}
       {{- end }}
       {{- else }}
       {{- with .Values.cluster.name }}
       name: {{ . }}
       {{- end }}
       {{- end }}
+
+      {{- if .Values.cluster.useQUIC }}
+      use_quic: true
+      {{- end }}
+
+      {{- with .Values.cluster.pool_size }}
+      pool_size: {{ . }}
+      {{- end }}
+
+      {{- with .Values.cluster.accounts }}
+      accounts: {{ toRawJson . }}
+      {{- end }}      
 
       {{- with .Values.cluster.tls }}
       {{-  $cluster_tls := merge (dict) . }}
@@ -195,6 +225,10 @@ data:
 
       {{- with .Values.cluster.noAdvertise }}
       no_advertise: {{ . }}
+      {{- end }}
+
+      {{- with .Values.cluster.compression }}
+      compression: {{ . }}
       {{- end }}
 
       connect_retries: {{ .Values.nats.connectRetries }}
@@ -424,12 +458,20 @@ data:
     write_deadline: {{ . }}
     {{- end }}
 
+    {{- with .Values.nats.limits.disableSublistCache }}
+    disable_sublist_cache: {{ . }}
+    {{- end }}
+
     {{- with .Values.nats.limits.lameDuckGracePeriod }}
     lame_duck_grace_period: {{ . }}
     {{- end }}
 
     {{- with .Values.nats.limits.lameDuckDuration }}
     lame_duck_duration: {{ . }}
+    {{- end }}
+
+    {{- with .Values.nats.limits.noFastStallProducerStall }}
+    no_fast_producer_stall: {{ . }}
     {{- end }}
 
     {{- if .Values.websocket.enabled }}

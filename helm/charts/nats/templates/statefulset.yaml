@@ -329,6 +329,8 @@ spec:
               fieldPath: metadata.namespace
         - name: CLUSTER_ADVERTISE
           value: {{ include "nats.clusterAdvertise" . }}
+        - name: CLUSTER_NAME
+          value: {{ .Values.cluster.name }}
         {{- if .Values.nats.gomemlimit }}
         - name: GOMEMLIMIT
           value: {{ .Values.nats.gomemlimit | quote }}

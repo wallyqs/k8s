@@ -46,7 +46,7 @@ nats:
 
     # Enable liveness checks.  If this fails, then the NATS Server will restarted.
     liveness:
-      enabled: true
+      enabled: false
 
       initialDelaySeconds: 10
       timeoutSeconds: 5
@@ -68,8 +68,8 @@ nats:
       failureThreshold: 3
 
       # Override the health check path
-      # httpGet:
-      #   path: /healthz?js-enabled=true
+      httpGet:
+        path: /healthz?js-server-only=true
 
       # Only for Kubernetes +1.22 that have pod level probes enabled.
       # terminationGracePeriodSeconds: 5
@@ -86,8 +86,8 @@ nats:
       failureThreshold: 3
 
       # Override the health check path
-      # httpGet:
-      #   path: /healthz?js-server-only=true
+      httpGet:
+        path: /healthz?js-server-only=true
 
     # Enable startup checks to confirm server is ready for traffic.
     # This is recommended for JetStream deployments since in cluster mode
